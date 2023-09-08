@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+    <title>Star Wars CC</title>
+    <link rel="stylesheet" href="space.css">
+</head>
+
+<body>
+    <div class="clas">
+       <h1>Star Wars <br> Spaceship <br> Comparision</h1>     
+    </div>
+
+    <div>
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-sm-6">
+                    <label for="spaceship1" class="form-label">Spaceship 1</label>
+                    <input type="text" class="form-control" id="spaceship1" placeholder="Enter Spaceship name">
+                </div>
+                <div class="col-sm-6">
+                    <label for="spaceship2" class="form-label">Spaceship 2</label>
+                    <input type="text" class="form-control" id="spaceship2" placeholder="Enter Spaceship name">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col text-center">
+                    <button class="btn btn-primary" onclick="compareSpaceships()">Compare Spaceships</button>
+                </div>
+            </div>
+            <div class="row mb-12">
+                <div class="col-sm-12">
+                    <div class="d-flex justify-content-center">
+                        <div class="comparision-result spaceship1 mr-3">
+                        </div>
+                        </div>
+                <div class="col-sm-12">
+                    <div class="d-flex justify-content-center">
+                        <div class="comparision-result spaceship2 ml-3">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+        <Script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></Script>
+
+        <script>
+
+            async function fetchCharacter(name) {
+                const response = await fetch(`https://swapi.dev/api/starships/?search=${name}`)
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data.results[0]);
+
+                    if (data.count > 0) {
+                        return data.results[0];
+                    } else {
+                        throw new Error(`Spaceship not found: ${name}`);
+                    }
+                } else {
+                    throw new Error(`Error fetching character ${response.statusText}`);
+                }
+
+
+            }
+
+
+            async function compareSpaceships() {
+                const spaceship1Id = document.getElementById("spaceship1").value;
+                const spaceship2Id = document.getElementById("spaceship2").value;
+
+                try {
+                    const spaceship1 = await fetchCharacter(spaceship1Id);
+                    const spaceship2 = await fetchCharacter(spaceship2Id);
+
+                    const spaceship1length = parseInt(spaceship1.length, 10);
+                    const spaceship2length = parseInt(spaceship2.length);
+                    const spaceship1cost_in_credits = parseInt(spaceship1.cost_in_credits);
+                    const spaceship2cost_in_credits = parseInt(spaceship2.cost_in_credits);
+
+                    const spaceship1cargo_capacity = parseInt(spaceship1.cargo_capacity, 10);
+                    const spaceship2cargo_capacity = parseInt(spaceship2.cargo_capacity);
+                    const spaceship1max_atmosphering_speed = parseInt(spaceship1.max_atmosphering_speed);
+                    const spaceship2max_atmosphering_speed = parseInt(spaceship2.max_atmosphering_speed);
+
+                    if (isNaN(spaceship1cargo_capacity) || isNaN(spaceship2cargo_capacity) || isNaN(spaceship1max_atmosphering_speed) || isNaN(spaceship2max_atmosphering_speed)) {
+                        throw new Error('Unable to parse spaceships cargo_capacity or max_atmosphering_speed');
+                    }
+
+                    const largerSpaceship = spaceship1cargo_capacity < spaceship2cargo_capacity ? spaceship1 : spaceship2;
+                    const fasterSpaceship = spaceship1max_atmosphering_speed > spaceship2max_atmosphering_speed ? spaceship1 : spaceship2;
+
+                    const largerMessage = `${largerSpaceship.name} is larger based on cargo_capacity`;
+                    const fasterMessage = `${fasterSpaceship.name} is faster based on max_atmosphering_speed`;
+                    console.log(largerMessage, fasterMessage);
+
+
+
+                    if (isNaN(spaceship1length) || isNaN(spaceship2length) || isNaN(spaceship1cost_in_credits) || isNaN(spaceship2cost_in_credits)) {
+                        throw new Error('Unable to parse spaceships length or cost_in_credits');
+                    }
+
+                    const biggerSpaceship = spaceship1length < spaceship2length ? spaceship1 : spaceship2;
+                    const costlierSpaceship = spaceship1cost_in_credits > spaceship2cost_in_credits ? spaceship1 : spaceship2;
+
+                    const biggerMessage = `${biggerSpaceship.name} is bigger based on length`;
+                    const costlierMessage = `${costlierSpaceship.name} is costlier based on cost_in_credits`;
+                    console.log(biggerMessage, costlierMessage);
+
+                    const comparisonResult = `
+                    <div class = "row-mb-12">
+                        <div class "col-sm-6">
+                            <h3>${spaceship1.name}</h3>
+                            <p>Length :${spaceship1.length}M </p>
+                            <p>Cost_in_credits :${spaceship1.cost_in_credits}¢</p>
+                            <p>cargo_capacity :${spaceship1.cargo_capacity} t </p>
+                            <p>max_atmospheric_speed :${spaceship1.max_atmosphering_speed}miles/s</p>
+                        </div>
+                        <div class "col-sm-6">
+                            <h3>${spaceship2.name}</h3>
+                            <p>Length :${spaceship2.length}M </p>
+                            <p>Cost_in_credits :${spaceship2.cost_in_credits}¢</p>
+                            <p>cargo_capacity :${spaceship2.cargo_capacity} t </p>
+                            <p>max_atmospheric_speed :${spaceship2.max_atmosphering_speed}miles/s</p>
+                        </div>
+                    </div>
+                <div class = "row">
+                    <div class ="col text-center">
+                        <h4>${biggerMessage}</h4>
+                        <h4>${largerMessage}</h4>
+                        <h4>${costlierMessage}</h4>
+                        <h4>${fasterMessage}</h4>
+                    </div>
+                </div>
+                    `;
+
+                    document.querySelector(".comparision-result").innerHTML = comparisonResult;
+                }
+
+                catch (error) {
+                    alert(error)
+                }
+
+            }
+        </script>
+</body>
+
+</html>
